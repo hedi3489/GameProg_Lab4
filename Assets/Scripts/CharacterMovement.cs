@@ -11,8 +11,9 @@ public class CharacterMovement : MonoBehaviour
     public float walkSpeed = 5;
     public float runSpeed = 8; 
     public float jumpHeight = 2;
+    public int maxJumpCount = 1;
     public float gravity = -9.18f;
-    
+    public bool isGrounded;
     private CharacterController controller;
     private Animator animator;
 
@@ -24,8 +25,12 @@ public class CharacterMovement : MonoBehaviour
 
     public void Update()
     {
-        ProcessMovement();
+        if (animator.applyRootMotion == false)
+        {
+            ProcessMovement();
+        }
         ProcessGravity();
+
     }
 
     public void LateUpdate()
@@ -40,9 +45,7 @@ public class CharacterMovement : MonoBehaviour
 
     void UpdateAnimator()
     {
-        bool isGrounded = controller.isGrounded; 
         // TODO 
-        
     }
 
     void ProcessMovement()
@@ -52,11 +55,11 @@ public class CharacterMovement : MonoBehaviour
         {
             gameObject.transform.forward = move;
         }
+        controller.Move(move * Time.deltaTime * GetMovementSpeed());
     }
 
     public void ProcessGravity()
     {
-        bool isGrounded = controller.isGrounded;
         // Since there is no physics applied on character controller we have this applies to reapply gravity
         
         if (isGrounded  )
@@ -65,7 +68,7 @@ public class CharacterMovement : MonoBehaviour
             {
                 playerVelocity.y = -1.0f;
             }
-            
+
             if (Input.GetButtonDown("Jump")) // Code to jump
             {
                 playerVelocity.y +=  Mathf.Sqrt(jumpHeight * -3.0f * gravity);
@@ -74,9 +77,10 @@ public class CharacterMovement : MonoBehaviour
         else // if not grounded
         {
             playerVelocity.y += gravity * Time.deltaTime;
-        }       
+        }
 
-        controller.Move(move * Time.deltaTime * GetMovementSpeed() + playerVelocity * Time.deltaTime);
+        controller.Move(playerVelocity * Time.deltaTime);
+        isGrounded = controller.isGrounded;
         
     }
 
