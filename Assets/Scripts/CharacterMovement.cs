@@ -38,14 +38,21 @@ public class CharacterMovement : MonoBehaviour
     void ProcessMovement()
     { 
         move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+        // Turns the player toward where wants to go
         if (move != Vector3.zero)
         {
             gameObject.transform.forward = move;
         }
-        isRunning = Input.GetButton("Fire1");
+        // Check input to know if running is getting pressed
+        isRunning = Input.GetButton("Run");
+        if (Input.GetButtonDown("Jump") && isGrounded) // Code to jump
+        {
+                playerVelocity.y +=  Mathf.Sqrt(jumpHeight * -3.0f * gravity);
+        }
         controller.Move(move * Time.deltaTime *((isRunning)?runSpeed:walkSpeed));
     }
 
+    /// Dont Modify -----------------------------------------------
     public void ProcessGravity()
     {
         // Since there is no physics applied on character controller we have this applies to reapply gravity
@@ -55,11 +62,6 @@ public class CharacterMovement : MonoBehaviour
             if (playerVelocity.y < 0.0f) // we want to make sure the players stays grounded when on the ground
             {
                 playerVelocity.y = -1.0f;
-            }
-
-            if (Input.GetButtonDown("Jump")) // Code to jump
-            {
-                playerVelocity.y +=  Mathf.Sqrt(jumpHeight * -3.0f * gravity);
             }
         }
         else // if not grounded
@@ -80,20 +82,21 @@ public class CharacterMovement : MonoBehaviour
         controller.Move(velocity);
     }
 
-    public float GetAnimationSpeed()
+    public float GetMoveSpeed()
     {
         if (isRunning && (move != Vector3.zero))// Left shift
         {
-            return 1.0f;
+            return runSpeed;
         }
         else if (move != Vector3.zero)
         {
-            return 0.5f;
+            return walkSpeed;
         }
         else 
-         {
+        {
             return 0f;
         }
     }
+    /// Dont Modify -----------------------------------------------
 
 }
