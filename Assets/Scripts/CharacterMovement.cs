@@ -14,6 +14,7 @@ public class CharacterMovement : MonoBehaviour
     public int maxJumpCount = 1;
     public float gravity = -9.18f;
     public bool isGrounded;
+    public bool isRunning;
     private CharacterController controller;
     private Animator animator;
 
@@ -32,21 +33,7 @@ public class CharacterMovement : MonoBehaviour
         ProcessGravity();
 
     }
-
-    public void LateUpdate()
-    {
-       UpdateAnimator();
-    }
-
-    void DisableRootMotion()
-    {
-        animator.applyRootMotion = false;  
-    }
-
-    void UpdateAnimator()
-    {
-        // TODO 
-    }
+  
 
     void ProcessMovement()
     { 
@@ -55,7 +42,8 @@ public class CharacterMovement : MonoBehaviour
         {
             gameObject.transform.forward = move;
         }
-        controller.Move(move * Time.deltaTime * GetMovementSpeed());
+        isRunning = Input.GetButton("Fire1");
+        controller.Move(move * Time.deltaTime *((isRunning)?runSpeed:walkSpeed));
     }
 
     public void ProcessGravity()
@@ -84,15 +72,28 @@ public class CharacterMovement : MonoBehaviour
         
     }
 
-    float GetMovementSpeed()
+    private void OnAnimatorMove()
     {
-        if (Input.GetButton("Fire3"))// Left shift
+        Vector3 velocity = animator.deltaPosition;
+        velocity.y = playerVelocity.y * Time.deltaTime;
+
+        controller.Move(velocity);
+    }
+
+    public float GetAnimationSpeed()
+    {
+        if (isRunning && (move != Vector3.zero))// Left shift
         {
-            return runSpeed;
+            return 1.0f;
         }
-        else
+        else if (move != Vector3.zero)
         {
-            return walkSpeed;
+            return 0.5f;
+        }
+        else 
+         {
+            return 0f;
         }
     }
+
 }
