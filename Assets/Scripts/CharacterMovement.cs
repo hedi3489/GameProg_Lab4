@@ -34,7 +34,7 @@ public class CharacterMovement : MonoBehaviour
 
     }
   
-
+    public bool GetGrounded() { return controller.isGrounded; }
     void ProcessMovement()
     { 
         move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
